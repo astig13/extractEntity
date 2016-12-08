@@ -10,7 +10,29 @@ const firstOfEntityRole = function(message, entity, role) {
   return valsForRole ? valsForRole[0] : null
 }
 
-const collectCity = client.createStep({
+exports.handle = (client) => {
+  // Create steps
+  const sayHello = client.createStep({
+    satisfied() {
+      return Boolean(client.getConversationState().helloSent)
+    },
+
+    prompt() {
+      client.addResponse('welcome')
+      client.addResponse('provide/documentation', {
+        documentation_link: 'http://docs.init.ai',
+      })
+      client.addResponse('provide/instructions')
+
+      client.updateConversationState({
+        helloSent: true
+      })
+
+      client.done()
+    }
+  })
+  
+  const collectCity = client.createStep({
   satisfied() {
     return Boolean(client.getConversationState().weatherCity)
   },
@@ -34,28 +56,6 @@ const collectCity = client.createStep({
     client.done()
   },
 })
-
-exports.handle = (client) => {
-  // Create steps
-  const sayHello = client.createStep({
-    satisfied() {
-      return Boolean(client.getConversationState().helloSent)
-    },
-
-    prompt() {
-      client.addResponse('welcome')
-      client.addResponse('provide/documentation', {
-        documentation_link: 'http://docs.init.ai',
-      })
-      client.addResponse('provide/instructions')
-
-      client.updateConversationState({
-        helloSent: true
-      })
-
-      client.done()
-    }
-  })
 
   const untrained = client.createStep({
     satisfied() {
