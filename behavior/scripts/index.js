@@ -10,7 +10,7 @@ const firstOfEntityRole = function(message, entity, role) {
   return valsForRole ? valsForRole[0] : null
 }
 
-exports.handle = (client) => {
+exports.handle = function handle(client) {
   // Create steps
   const sayHello = client.createStep({
     satisfied() {
@@ -34,6 +34,7 @@ exports.handle = (client) => {
   
   const collectCity = client.createStep({
   satisfied() {
+	console.log('conversation state:', client.getConversationState().weatherCity) 
     return Boolean(client.getConversationState().weatherCity)
   },
   
@@ -41,6 +42,7 @@ exports.handle = (client) => {
     const city = firstOfEntityRole(client.getMessagePart(), 'city')
 
     if (city) {
+	  console.log('update conversation state:', city.value)
       client.updateConversationState({
         weatherCity: city,
       })
