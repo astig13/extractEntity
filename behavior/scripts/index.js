@@ -53,7 +53,7 @@ exports.handle = function handle(client) {
 
   prompt() {
     // Need to prompt user for city    
-	client.addTextResponse('It is beautiful')
+	client.addResponse('provide_information/city')
     console.log('Need to ask user for city')
     client.done()
   },
