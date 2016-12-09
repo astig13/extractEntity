@@ -1,5 +1,7 @@
 'use strict'
 
+const isCustRegisteredApi = require('./lib/getIsRegistered')
+
 const firstOfEntityRole = function (message, entity, role) {
     role = role || 'generic';
 
@@ -82,7 +84,45 @@ exports.handle = function handle(client) {
 
     const formalHello = client.createStep({
         satisfied() {
-            console.log('class = ', client.getMessagePart().classification.base_type.value)
+            console.log('class = ', client.getConversationState().overAgeEighteen)
+            return (typeof client.getConversationState().formalHello !== 'undefined')
+            //return Boolean(client.getMessagePart().classification.base_type.value != 'undefined')
+            //console.log('conversation state:', client.getConversationState().weatherCity) 
+            //return Boolean(client.getConversationState().weatherCity)
+            //return false
+        },
+
+    
+        prompt(callback) {
+            isCustRegisteredApi(client.getConversationState().weatherCity.value, resultBody => {
+                if (!resultBody) {
+                    //callback()
+                    return
+                }
+
+                const registrationInfo = (
+                  resultBody
+                )
+                callback()
+            })
+            if (registrationInfo.value === true) {
+
+            }
+            else {
+                //client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. How can I help you')
+                client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. Do you want to be registered?')
+                client.updateConversationState({
+                    formalHello: true,
+                })
+            }
+            //client.expect(client.getStreamName(), ['affirmative', 'decline'])
+            client.done()
+        },
+    })
+
+    const checkRegistration = client.createStep({
+        satisfied() {
+            console.log('class = ', client.getConversationState().overAgeEighteen)
             return (typeof client.getConversationState().overAgeEighteen !== 'undefined')
             //return Boolean(client.getMessagePart().classification.base_type.value != 'undefined')
             //console.log('conversation state:', client.getConversationState().weatherCity) 
@@ -93,17 +133,17 @@ exports.handle = function handle(client) {
         next() {
             const subscrWantsToBeRegistered = client.getConversationState().overAgeEighteen
             if (subscrWantsToBeRegistered === true) {
-                
+
                 return 'customerRegistered'
             } else if (subscrWantsToBeRegistered === false) {
-               
+
                 return 'customerNotRegistered'
             }
         },
 
         prompt() {
             //client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. How can I help you')
-            client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. Do you want to be registered?')
+            //client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. Do you want to be registered?')
             let baseClassification = client.getMessagePart().classification.base_type.value
             if (baseClassification === 'affirmative') {
                 client.updateConversationState({
@@ -123,48 +163,6 @@ exports.handle = function handle(client) {
         },
     })
 
-    //const checkRegistration = client.createStep({
-    //    satisfied() {
-    //        //console.log('conversation state:', client.getConversationState().weatherCity) 
-            
-    //        return false
-    //    },
-
-    //    next() {
-    //        const IsRegistered = false
-    //        if (IsRegistered === true) {
-    //            return 'customerRegistered'
-    //        } else if (IsRegistered === false) {
-    //            return 'customerNotRegistered'
-    //        }
-    //    },
-
-    //    prompt() {
-    //        //client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. How can I help you')
-    //        let baseClassification = client.getMessagePart().classification.base_type.value
-    //        if (baseClassification === 'affirmative') {
-    //            console.log('User said YES')
-    //            return 'init.proceed' // `next` from this step will get called
-    //        } else if (baseClassification === 'decline') {
-    //            console.log('User said NO')
-    //            return 'init.proceed' // `next` from this step will get called
-    //        }
-    //        client.expect(client.getStreamName(), ['affirmative', 'decline'])
-    //        client.done()
-    //    },
-    //})
-
-    const untrained = client.createStep({
-        satisfied() {
-            return false
-        },
-
-        prompt() {
-            client.addResponse('apology/untrained')
-            client.done()
-        }
-    })
-
     client.runFlow({
         classifications: {
             // map inbound message classifications to names of streams
@@ -175,7 +173,7 @@ exports.handle = function handle(client) {
         streams: {
             main: 'getInfoCity',
             hi: [sayHello],
-            getInfoCity: [collectCity, formalHello],
+            getInfoCity: [collectCity, formalHello, checkRegistration],
             customerRegistered: [handleCustomerRegistered],
             customerNotRegistered: [handleCustomerNotRegistered]
         },
