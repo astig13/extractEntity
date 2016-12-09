@@ -87,38 +87,6 @@ exports.handle = function handle(client) {
             return false
         },
 
-        //next() {
-        //    const IsRegistered = false
-        //    if (IsRegistered === true) {
-        //        return 'customerRegistered'
-        //    } else if (IsRegistered === false) {
-        //        return 'customerNotRegistered'
-        //    }
-        //},
-
-        prompt() {
-            //client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. How can I help you')
-            client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. Do you want to be registered?')
-            //let baseClassification = client.getMessagePart().classification.base_type.value
-            //if (baseClassification === 'affirmative') {
-            //    console.log('User said YES')
-            //    return 'init.proceed' // `next` from this step will get called
-            //} else if (baseClassification === 'decline') {
-            //    console.log('User said NO')
-            //    return 'init.proceed' // `next` from this step will get called
-            //}
-            //client.expect(client.getStreamName(), ['affirmative', 'decline'])
-            client.done()
-        },
-    })
-
-    const checkRegistration = client.createStep({
-        satisfied() {
-            //console.log('conversation state:', client.getConversationState().weatherCity) 
-            //return Boolean(client.getConversationState().weatherCity)
-            return false
-        },
-
         next() {
             const IsRegistered = false
             if (IsRegistered === true) {
@@ -130,6 +98,7 @@ exports.handle = function handle(client) {
 
         prompt() {
             //client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. How can I help you')
+            client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. Do you want to be registered?')
             let baseClassification = client.getMessagePart().classification.base_type.value
             if (baseClassification === 'affirmative') {
                 console.log('User said YES')
@@ -142,6 +111,37 @@ exports.handle = function handle(client) {
             client.done()
         },
     })
+
+    //const checkRegistration = client.createStep({
+    //    satisfied() {
+    //        //console.log('conversation state:', client.getConversationState().weatherCity) 
+    //        //return Boolean(client.getConversationState().weatherCity)
+    //        return false
+    //    },
+
+    //    next() {
+    //        const IsRegistered = false
+    //        if (IsRegistered === true) {
+    //            return 'customerRegistered'
+    //        } else if (IsRegistered === false) {
+    //            return 'customerNotRegistered'
+    //        }
+    //    },
+
+    //    prompt() {
+    //        //client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. How can I help you')
+    //        let baseClassification = client.getMessagePart().classification.base_type.value
+    //        if (baseClassification === 'affirmative') {
+    //            console.log('User said YES')
+    //            return 'init.proceed' // `next` from this step will get called
+    //        } else if (baseClassification === 'decline') {
+    //            console.log('User said NO')
+    //            return 'init.proceed' // `next` from this step will get called
+    //        }
+    //        client.expect(client.getStreamName(), ['affirmative', 'decline'])
+    //        client.done()
+    //    },
+    //})
 
     const untrained = client.createStep({
         satisfied() {
@@ -164,7 +164,7 @@ exports.handle = function handle(client) {
         streams: {
             main: 'getInfoCity',
             hi: [sayHello],
-            getInfoCity: [collectCity, formalHello, checkRegistration],
+            getInfoCity: [collectCity, formalHello],
             customerRegistered: [handleCustomerRegistered],
             customerNotRegistered: [handleCustomerNotRegistered]
         },
