@@ -1,6 +1,7 @@
 'use strict'
 
 const isCustRegisteredApi = require('./lib/getIsRegistered')
+const custName = require('./lib/details')
 
 const firstOfEntityRole = function (message, entity, role) {
     role = role || 'generic';
@@ -66,9 +67,16 @@ exports.handle = function handle(client) {
         satisfied() {
             return false
         },
-        prompt() {
-            client.addTextResponse("Register affirmative")
-            client.done()
+            prompt(callback) {
+                custName(client.getConversationState().weatherCity.value, resultBody => {
+                
+                    //callback()
+
+                    client.addTextResponse('Hello user ' + resultBody )
+                    client.done()
+                })
+            
+            //client.addTextResponse("Register affirmative")
         }
     })
 
