@@ -60,6 +60,22 @@ exports.handle = function handle(client) {
   },
 })
 
+const formalHello = client.createStep({
+  satisfied() {
+	//console.log('conversation state:', client.getConversationState().weatherCity) 
+      //return Boolean(client.getConversationState().weatherCity)
+      return false
+  },
+
+  prompt() {
+    // Need to prompt user for city    
+	//client.addResponse('provide_information/city')
+      client.addTextResponse('Hello user ' + city.value +'. How can I help you')
+    console.log('Need to ask user for city')
+    client.done()
+  },
+})
+
   const untrained = client.createStep({
     satisfied() {
       return false
@@ -81,7 +97,7 @@ exports.handle = function handle(client) {
     streams: {
       main: 'getInfoCity',
       hi: [sayHello],
-	  getInfoCity: [collectCity],
+	  getInfoCity: [collectCity, formalHello],
     },
   })
 }
