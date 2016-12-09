@@ -39,7 +39,7 @@ exports.handle = function handle(client) {
   },
   
   extractInfo() {
-    const city = firstOfEntityRole(client.getMessagePart(), 'number')
+    const city = firstOfEntityRole(client.getMessagePart(), 'number/custId')
 
     if (city) {
 	  console.log('update conversation state:', city.value)
