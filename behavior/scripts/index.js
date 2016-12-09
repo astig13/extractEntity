@@ -95,29 +95,28 @@ exports.handle = function handle(client) {
     
         prompt(callback) {
             isCustRegisteredApi(client.getConversationState().weatherCity.value, resultBody => {
-                if (!resultBody) {
-                    //callback()
-                    return
+                
+                //callback()
+                //}
+                if (resultBody === 'true') {
+                    console.log('res2', resultBody)
+                    client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. Do you want to be registered?')
+                    client.updateConversationState({
+                        formalHello: true,
+                    })
                 }
-
-                const registrationInfo = (
-                  resultBody
-                )
-                callback()
+                else {
+                    console.log('res3', resultBody)
+                    //client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. How can I help you')
+                    client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. Do you want to be registered?')
+                    client.updateConversationState({
+                        formalHello: true,
+                    })
+                }
+                //client.expect(client.getStreamName(), ['affirmative', 'decline'])
+                client.done()
             })
-            if (registrationInfo.value === true) {
-
-            }
-            else {
-                //client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. How can I help you')
-                client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. Do you want to be registered?')
-                client.updateConversationState({
-                    formalHello: true,
-                })
-            }
-            //client.expect(client.getStreamName(), ['affirmative', 'decline'])
-            client.done()
-        },
+        }
     })
 
     const checkRegistration = client.createStep({
