@@ -82,16 +82,21 @@ exports.handle = function handle(client) {
 
     const formalHello = client.createStep({
         satisfied() {
+            console.log('class = ', client.getMessagePart().classification.base_type.value)
+            return (typeof client.getConversationState().overAgeEighteen !== 'undefined')
+            //return Boolean(client.getMessagePart().classification.base_type.value != 'undefined')
             //console.log('conversation state:', client.getConversationState().weatherCity) 
             //return Boolean(client.getConversationState().weatherCity)
-            return false
+            //return false
         },
 
         next() {
-            const IsRegistered = false
-            if (IsRegistered === true) {
+            const subscrWantsToBeRegistered = client.getConversationState().overAgeEighteen
+            if (subscrWantsToBeRegistered === true) {
+                
                 return 'customerRegistered'
-            } else if (IsRegistered === false) {
+            } else if (subscrWantsToBeRegistered === false) {
+               
                 return 'customerNotRegistered'
             }
         },
@@ -101,10 +106,16 @@ exports.handle = function handle(client) {
             client.addTextResponse('Hello user ' + client.getConversationState().weatherCity.value + '. Do you want to be registered?')
             let baseClassification = client.getMessagePart().classification.base_type.value
             if (baseClassification === 'affirmative') {
+                client.updateConversationState({
+                    overAgeEighteen: true,
+                })
                 console.log('User said YES')
                 return 'init.proceed' // `next` from this step will get called
             } else if (baseClassification === 'decline') {
                 console.log('User said NO')
+                client.updateConversationState({
+                    overAgeEighteen: false,
+                })
                 return 'init.proceed' // `next` from this step will get called
             }
             client.expect(client.getStreamName(), ['affirmative', 'decline'])
@@ -115,7 +126,7 @@ exports.handle = function handle(client) {
     //const checkRegistration = client.createStep({
     //    satisfied() {
     //        //console.log('conversation state:', client.getConversationState().weatherCity) 
-    //        //return Boolean(client.getConversationState().weatherCity)
+            
     //        return false
     //    },
 
